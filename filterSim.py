@@ -12,7 +12,8 @@ from PyQt6.QtWidgets import(
     QPushButton,
     QVBoxLayout,
     QHBoxLayout,
-    QLineEdit
+    QLineEdit,
+    QComboBox
 )
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
@@ -117,9 +118,10 @@ col1 = QVBoxLayout()
 #Left Column
 ########################
 
-#Title
-title = QLabel("Analog Filter Simulator")
-col1.addWidget(title)
+#Create dropdown
+filterDropDn = QComboBox()
+filterDropDn.addItem("Frequency Cutoff Calculate")
+filterDropDn.addItem("Component Calculate")
 
 #Adding component values
 resistanceBox = QLineEdit()
@@ -135,10 +137,15 @@ lpCapacitorBox.setPlaceholderText("Enter low Pass Capacitance in uF")
 calcButton = QPushButton("Calculate")
 calcButton.clicked.connect(lambda: run_button(resistanceBox, hpCapacitorBox, lpCapacitorBox))
 
+
+#Resise column
+col1.addWidget(filterDropDn)
+col1.addStretch()
 col1.addWidget(resistanceBox)
 col1.addWidget(hpCapacitorBox)
 col1.addWidget(lpCapacitorBox)
 col1.addWidget(calcButton)
+
 
 #########################
 #Right Column
@@ -152,21 +159,15 @@ if image.isNull():
 
 image_label = QLabel()
 
-image_label.setPixmap(
-    image.scaled(
-        350,
-        500,
-        Qt.AspectRatioMode.KeepAspectRatio,
-        Qt.TransformationMode.SmoothTransformation
-    )
-)
+image_label.setPixmap(image)
+image_label.setMinimumSize(400,500)
 
 col2.addWidget(image_label)
 
 
 
-layout.addLayout(col1)
-layout.addLayout(col2)
+layout.addLayout(col1,30)
+layout.addLayout(col2,70)
 window.setLayout(layout)
 
 
