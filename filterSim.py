@@ -25,6 +25,7 @@ def plot_freqResp(freq, Vout, VoutdB, filterType, Rlp, Rhp, Clp, Chp, cutoffLp, 
         print(cutoffLp)
         plt.figure(1)
         plt.plot(freq, Vout)
+        plt.axvline(x=cutoffLp, color='red', linestyle='--')
         plt.title("Low Pass RC Circuit")
         componentVal = (
             "Rlp = " + str(Rlp) + "Ω\n"
@@ -34,6 +35,7 @@ def plot_freqResp(freq, Vout, VoutdB, filterType, Rlp, Rhp, Clp, Chp, cutoffLp, 
         #Plot the gain in dB
         plt.figure(2)
         plt.plot(freq, VoutdB)
+        plt.axvline(x=cutoffLp, color='red', linestyle='--')
         plt.title("Low Pass RC Circuit Gain")
         componentVal = (
             "Rlp = " + str(Rlp) + "Ω\n"
@@ -44,6 +46,7 @@ def plot_freqResp(freq, Vout, VoutdB, filterType, Rlp, Rhp, Clp, Chp, cutoffLp, 
         #Plot the actual voltage
         plt.figure(1)
         plt.plot(freq, Vout)
+        plt.axvline(x=cutoffHp, color='red', linestyle='--')
         plt.title("High Pass RC Circuit")
         componentVal = (
             "Rlp = " + str(Rhp) + "Ω\n"
@@ -53,6 +56,7 @@ def plot_freqResp(freq, Vout, VoutdB, filterType, Rlp, Rhp, Clp, Chp, cutoffLp, 
         #Plot the gain in dB
         plt.figure(2)
         plt.plot(freq, VoutdB)
+        plt.axvline(x=cutoffHp, color='red', linestyle='--')
         plt.title("High Pass RC Circuit Gain")
         componentVal = (
             "Rlp = " + str(Rhp) + "Ω\n"
