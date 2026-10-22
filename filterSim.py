@@ -33,7 +33,7 @@ def calc_resp():
         #Vout = Win*R/sqrt(R^2+X_c^2)
         Vout = [(Vin*R)/(math.sqrt(R*R+x*x)) for x in x_c]
 
-    elif filterType == "BP":
+    elif filtType == "BP":
         #Bandpass mode
         Cl = input("Please input low pass Capacitor Value in uF: ")
         Ch = input("Please input high pass Capacitor Value in uF: ")
