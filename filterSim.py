@@ -25,6 +25,8 @@ def run_button(resistance, hpCapacitor, lpCapacitor):
     Chp = float(hpCapacitor.text())
     Clp = float(lpCapacitor.text())
 
+    calc_resp(R, Chp, Clp)
+
     return
 
 
@@ -33,33 +35,37 @@ def run_button(resistance, hpCapacitor, lpCapacitor):
 
 #This code will be used to simulate the response of an RC filter
 
-def calc_resp():
+def calc_resp(R, Chp, Clp):
+    Clp = Clp*1e-6
+    Chp = Chp*1e-6
+    #Determine the type of filter through the values 
+    if Chp == 0:
+        filtType = "LP"
+    elif Clp == 0:
+        filtType = "HP"
+    else:
+        filtType = "BP"
+
+    
     #Function to calculate the frequency response
     
-    #Give option for LP or HP filter
-    filtType = input("Please Return what type of filter: ")
-    print(filtType)
-    
-    #Create frequencies array 1 Hz to 1.5kHz
+    #Create frequencies array 1 Hz to 1.5kHz - Change later to ask for frequency range in GUI
     freq = range(1,500)
     
-    #Equation for impedance is X_c = 1/(2*pi*f*C)
-    x_c = [1/(2*math.pi*float(f)*C) for f in freq]    
-
-
-    #Get component values
-    R = input("Please input value for resistor in ohms: ")
-    Vin = input("Please input value for input voltage in V: ")
+    #Change in GUI to ask for input voltage
+    Vin = 5
 
     if filtType == "LP":
         #Low Pass mode
-        C = input("Please input low pass Capacitor Value in uF: ")
         #Vout = Vin*X_c/sqrt(R^2+X_c^2)
+        #Equation for impedance is X_c = 1/(2*pi*f*C)
+        x_c = [1/(2*math.pi*float(f)*Clp) for f in freq]    
         Vout = [(Vin*x)/(math.sqrt(R*R+x*x)) for x in x_c]
         
     elif filtType == "HP":
         #High Pass mode
-        C = input("Please input high pass Capacitor Value in uF: ")
+        #Equation for impedance is X_c = 1/(2*pi*f*C)
+        x_c = [1/(2*math.pi*float(f)*Chp) for f in freq]    
         #Vout = Win*R/sqrt(R^2+X_c^2)
         Vout = [(Vin*R)/(math.sqrt(R*R+x*x)) for x in x_c]
 
@@ -82,7 +88,7 @@ def calc_resp():
     #Figure 1, actual voltage
     plt.figure(1)
     plt.plot(freq, Vout)
-    plt.title(filtType + " Filter frequency Response" + "R=" + str(R) + " C=" + str(C))
+    plt.title(filtType + " Filter frequency Response" + "R=" + str(R) + " C=" + str(Clp))
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("voltage (V)")
 
@@ -90,7 +96,7 @@ def calc_resp():
     #Figure 2 gain in dB
     plt.figure(2)
     plt.plot(freq, VoutdB)
-    plt.title(filtType + " Filter frequency Response" + "R=" + str(R) + " C=" + str(C))
+    plt.title(filtType + " Filter frequency Response" + "R=" + str(R) + " C=" + str(Clp))
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("gain (dB)")
     plt.show()
