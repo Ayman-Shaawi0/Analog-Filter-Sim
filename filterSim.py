@@ -18,6 +18,51 @@ from PyQt6.QtWidgets import(
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 
+#Function to display and plot the output responses
+def plot_freqResp(freq, Vout, VoutdB, filterType, Rlp, Rhp, Clp, Chp):
+    if filterType == "Low Pass RC":
+        #Plot the actual voltage
+        plt.figure(1)
+        plt.plot(freq, Vout)
+        plt.title("Low Pass RC Circuit")
+        componentVal = (
+            "Rlp = " + str(Rlp) + "Ω\n"
+            "Clp = " + str(Clp) + "F\n"
+        )
+        plt.legend(plt.gca().lines, [componentVal], loc="upper right")
+        #Plot the gain in dB
+        plt.figure(2)
+        plt.plot(freq, VoutdB)
+        plt.title("Low Pass RC Circuit Gain")
+        componentVal = (
+            "Rlp = " + str(Rlp) + "Ω\n"
+            "Clp = " + str(Clp) + "F\n"
+        )
+        plt.legend(plt.gca().lines, [componentVal], loc="upper right")
+    elif filterType == "High Pass RC":
+        #Plot the actual voltage
+        plt.figure(1)
+        plt.plot(freq, Vout)
+        plt.title("High Pass RC Circuit")
+        componentVal = (
+            "Rlp = " + str(Rhp) + "Ω\n"
+            "Clp = " + str(Chp) + "F\n"
+        )
+        plt.legend(plt.gca().lines, [componentVal], loc="upper left")
+        #Plot the gain in dB
+        plt.figure(2)
+        plt.plot(freq, VoutdB)
+        plt.title("High Pass RC Circuit Gain")
+        componentVal = (
+            "Rlp = " + str(Rhp) + "Ω\n"
+            "Clp = " + str(Chp) + "F\n"
+        )
+        plt.legend(plt.gca().lines, [componentVal], loc="upper left")
+    elif filterType == "RC Unbuffered Bandpass":
+        pass
+
+    plt.show()
+
 #Function to change the layout when the dropdown is selected
 def change_circuit(filterType, rlp, rhp, clp, chp, RCLP, RCHP, RCBP):
     if filterType == "Low Pass RC":
@@ -83,7 +128,7 @@ def calc_resp(Rlp, Rhp, Chp, Clp, filtType, freqStart, freqEnd, Vin):
         freqEnd = freqStart + 1000
 
     freq = range(freqStart,freqEnd)
-
+    
     if filtType == "Low Pass RC":
         #Low Pass mode
         Rlp = float(Rlp.text())
@@ -108,24 +153,11 @@ def calc_resp(Rlp, Rhp, Chp, Clp, filtType, freqStart, freqEnd, Vin):
     #Calculate logarithmic value
     VoutdB = [20*math.log10(v/Vin) for v in Vout]
 
-    #Display the output of Vout
-    #Figure 1, actual voltage
-    plt.figure(1)
-    plt.plot(freq, Vout)
-    plt.title(filtType + " Filter frequency Response" + "R=" + str(Rlp) + " C=" + str(Clp))
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("voltage (V)")
+
+    #Display output function
+    plot_freqResp(freq, Vout, VoutdB, filtType, Rlp, Rhp, Clp, Chp)
 
 
-    #Figure 2 gain in dB
-    plt.figure(2)
-    plt.plot(freq, VoutdB)
-    plt.title(filtType + " Filter frequency Response" + "R=" + str(Rlp) + " C=" + str(Clp))
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("gain (dB)")
-    plt.show()
-
-    
     return True
 
 #Define GUI function
@@ -263,3 +295,20 @@ start_GUI()
 
 #calc_resp()
 
+
+    # #Display the output of Vout
+    # #Figure 1, actual voltage
+    # plt.figure(1)
+    # plt.plot(freq, Vout)
+    # plt.title(filtType + " Filter frequency Response" + "R=" + str(Rlp) + " C=" + str(Clp))
+    # plt.xlabel("Frequency (Hz)")
+    # plt.ylabel("voltage (V)")
+
+
+    # #Figure 2 gain in dB
+    # plt.figure(2)
+    # plt.plot(freq, VoutdB)
+    # plt.title(filtType + " Filter frequency Response" + "R=" + str(Rlp) + " C=" + str(Clp))
+    # plt.xlabel("Frequency (Hz)")
+    # plt.ylabel("gain (dB)")
+    # plt.show()
