@@ -57,8 +57,13 @@ def run_button(resistance1, resistance2, hpCapacitor, lpCapacitor, circuitType, 
 #This code will be used to simulate the response of an RC filter
 def calc_resp(Rlp, Rhp, Chp, Clp, filtType, freqStart, freqEnd, Vin):    
     #Function to calculate the frequency response
-    
-    #Create frequencies array 1 Hz to 1.5kHz - Change later to ask for frequency range in GUI
+    #Create frequency range. Error checking
+    #Set default to 1 Hz to 1kHz
+    if freqStart < 1:
+        freqStart = 1
+    if freqEnd <= freqStart:
+        freqEnd = freqStart + 1000
+
     freq = range(freqStart,freqEnd)
 
     if filtType == "Low Pass RC":
