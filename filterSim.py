@@ -1,5 +1,34 @@
 import math
 import matplotlib.pyplot as plt
+import sys
+
+import os
+os.environ["QT_QPA_PLATFORMTHEME"] = "generic"
+
+from PyQt6.QtWidgets import(
+    QApplication,
+    QWidget,
+    QLabel,
+    QPushButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLineEdit
+)
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt
+
+#Function when the run button is pressed
+def run_button(resistance, hpCapacitor, lpCapacitor):
+    #Take values from the text boxes
+    R = float(resistance.text())
+    Chp = float(hpCapacitor.text())
+    Clp = float(lpCapacitor.text())
+
+    return
+
+
+
+
 
 #This code will be used to simulate the response of an RC filter
 
@@ -72,5 +101,76 @@ def calc_resp():
 
 
 #Start of main code
-calc_resp()
+app = QApplication(sys.argv)
+
+window = QWidget()
+window.setWindowTitle("Analog Filter Sim")
+window.resize(800, 500)
+window.show()
+
+#Layout
+layout = QHBoxLayout()
+col2 = QVBoxLayout()
+col1 = QVBoxLayout()
+
+#########################
+#Left Column
+########################
+
+#Title
+title = QLabel("Analog Filter Simulator")
+col1.addWidget(title)
+
+#Adding component values
+resistanceBox = QLineEdit()
+resistanceBox.setPlaceholderText("Enter Resistance in Ohms")
+
+hpCapacitorBox = QLineEdit()
+hpCapacitorBox.setPlaceholderText("Enter High Pass Capacitance in uF")
+
+lpCapacitorBox = QLineEdit()
+lpCapacitorBox.setPlaceholderText("Enter low Pass Capacitance in uF")
+
+#Create Calculate button
+calcButton = QPushButton("Calculate")
+calcButton.clicked.connect(lambda: run_button(resistanceBox, hpCapacitorBox, lpCapacitorBox))
+
+col1.addWidget(resistanceBox)
+col1.addWidget(hpCapacitorBox)
+col1.addWidget(lpCapacitorBox)
+col1.addWidget(calcButton)
+
+#########################
+#Right Column
+########################
+
+#Picture on right
+image = QPixmap("fil85.webp")
+
+if image.isNull():
+    print("Error: Image could not be loaded")
+
+image_label = QLabel()
+
+image_label.setPixmap(
+    image.scaled(
+        350,
+        500,
+        Qt.AspectRatioMode.KeepAspectRatio,
+        Qt.TransformationMode.SmoothTransformation
+    )
+)
+
+col2.addWidget(image_label)
+
+
+
+layout.addLayout(col1)
+layout.addLayout(col2)
+window.setLayout(layout)
+
+
+
+sys.exit(app.exec())
+#calc_resp()
 
