@@ -10,7 +10,7 @@ def calc_resp():
     filtType = input("Please Return what type of filter: ")
     print(filtType)
     
-    #Create frequencies array (1 Hz to 10kHz
+    #Create frequencies array 1 Hz to 1.5kHz
     freq = range(1,500)
     
     #Equation for impedance is X_c = 1/(2*pi*f*C)
@@ -19,7 +19,7 @@ def calc_resp():
 
     #Get component values
     R = input("Please input value for resistor in ohms: ")
-    
+    Vin = input("Please input value for input voltage in V: ")
 
     if filtType == "LP":
         #Low Pass mode
