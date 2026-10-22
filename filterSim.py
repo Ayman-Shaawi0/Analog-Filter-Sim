@@ -19,9 +19,10 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 
 #Function to display and plot the output responses
-def plot_freqResp(freq, Vout, VoutdB, filterType, Rlp, Rhp, Clp, Chp):
+def plot_freqResp(freq, Vout, VoutdB, filterType, Rlp, Rhp, Clp, Chp, cutoffLp, cutoffHp):
     if filterType == "Low Pass RC":
         #Plot the actual voltage
+        print(cutoffLp)
         plt.figure(1)
         plt.plot(freq, Vout)
         plt.title("Low Pass RC Circuit")
@@ -153,9 +154,17 @@ def calc_resp(Rlp, Rhp, Chp, Clp, filtType, freqStart, freqEnd, Vin):
     #Calculate logarithmic value
     VoutdB = [20*math.log10(v/Vin) for v in Vout]
 
+    #Calculate the cutoff frequency
+    if filtType == "Low Pass RC":
+        cutoffLp = 1/(2*math.pi*Rlp*Clp) #1/2piRC
+        cutoffHp = 0
+    elif filtType == "High Pass RC":
+        cutoffLp = 0
+        cutoffHp = 1/(2*math.pi*Rhp*Chp) #1/2piRC
+
 
     #Display output function
-    plot_freqResp(freq, Vout, VoutdB, filtType, Rlp, Rhp, Clp, Chp)
+    plot_freqResp(freq, Vout, VoutdB, filtType, Rlp, Rhp, Clp, Chp, cutoffLp, cutoffHp)
 
 
     return True
