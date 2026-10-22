@@ -19,21 +19,30 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 
 #Function to change the layout when the dropdown is selected
-def change_circuit(filterType, rlp, rhp, clp, chp):
+def change_circuit(filterType, rlp, rhp, clp, chp, RCLP, RCHP, RCBP):
     if filterType == "Low Pass RC":
         print("Show low-pass layout")
+        RCLP.show()
+        RCHP.hide()
+        RCBP.hide()
         chp.hide()
         clp.show()
         rhp.hide()
         rlp.show()
     elif filterType == "High Pass RC":
         print("Show high-pass layout")
+        RCLP.hide()
+        RCHP.show()
+        RCBP.hide()
         chp.show()
         clp.hide()
         rhp.show()
         rlp.hide()
     elif filterType == "----":
         print("No Circuit Chosen")
+        RCLP.hide()
+        RCHP.hide()
+        RCBP.hide()
         chp.hide()
         clp.hide()
         rhp.hide()
@@ -150,12 +159,10 @@ def start_GUI():
     filterDropDn.addItem("RC Buffered Bandpass")
     filterDropDn.addItem("RLC Series Bandpass")
     filterDropDn.addItem("RLC Parallel Bandpass")
-    filterDropDn.currentTextChanged.connect(lambda filter_type: change_circuit(filter_type, lpResistanceBox, hpResistanceBox, lpCapacitorBox, hpCapacitorBox))
 
     #Create Calculate button
     calcButton = QPushButton("Calculate")
-    calcButton.clicked.connect(lambda: run_button(lpResistanceBox, hpResistanceBox, hpCapacitorBox, lpCapacitorBox, filterDropDn, freqStart, freqEnd, vinBox))
-
+ 
     #Add input voltage
     vinBox = QLineEdit()
     vinBox.setPlaceholderText("Enter the input voltage in V")
@@ -186,26 +193,54 @@ def start_GUI():
     #Right Column
     ########################
 
-    #Picture on right
-    image = QPixmap("fil85.webp")
+    #Pictures of each circuit
+    RCLowPassImg = QPixmap("RCLP.webp")
+    RCHighPassImg = QPixmap("RCHP.webp")
+    RCBandPassImg = QPixmap("fil85.webp")
 
-    if image.isNull():
+    #Check if image loaded properly
+    if RCLowPassImg.isNull():
+        print("Error: RC low pass image could not be loaded")
+    if RCHighPassImg.isNull():
+        print("Error: RC high pass image could not be loaded")
+    if RCBandPassImg.isNull():
         print("Error: Image could not be loaded")
 
-    image_label = QLabel()
 
-    image_label.setPixmap(image)
-    image_label.setMinimumSize(400,500)
+    #Image scaling
+    RCLowPassLabel = QLabel()
+    RCHighPassLabel = QLabel()
+    RCBandPassLabel = QLabel()
 
-    col2.addWidget(image_label)
+    RCLowPassLabel.setPixmap(RCLowPassImg)
+    RCLowPassLabel.setMinimumSize(400,150)
 
+    RCHighPassLabel.setPixmap(RCHighPassImg)
+    RCHighPassLabel.setMinimumSize(400,150)
+
+    RCBandPassLabel.setPixmap(RCBandPassImg)
+    RCBandPassLabel.setMinimumSize(400,150)
+
+    col2.addWidget(RCLowPassLabel)
+    col2.addWidget(RCHighPassLabel)
+    col2.addWidget(RCBandPassLabel)
+    
 
 
     layout.addLayout(col1,30)
     layout.addLayout(col2,70)
     window.setLayout(layout)
 
+    #Button or dropdown pressed
+    filterDropDn.currentTextChanged.connect(lambda filter_type: change_circuit(filter_type, lpResistanceBox, hpResistanceBox, lpCapacitorBox, hpCapacitorBox, RCLowPassLabel, RCHighPassLabel, RCBandPassLabel))
+    calcButton.clicked.connect(lambda: run_button(lpResistanceBox, hpResistanceBox, hpCapacitorBox, lpCapacitorBox, filterDropDn, freqStart, freqEnd, vinBox))
+    
+
+
     #Hide initial widgets, Keep only drop down and calculate button
+    RCLowPassLabel.hide()
+    RCHighPassLabel.hide()
+    RCBandPassLabel.hide()
     lpResistanceBox.hide()
     hpResistanceBox.hide()
     hpCapacitorBox.hide()
