@@ -44,22 +44,22 @@ def change_circuit(filterType, rlp, rhp, clp, chp):
 
 
 #Function when the run button is pressed
-def run_button(resistance1, resistance2, hpCapacitor, lpCapacitor, circuitType):
+def run_button(resistance1, resistance2, hpCapacitor, lpCapacitor, circuitType, freqStart, freqEnd, Vin):
     #Take values from the text boxes
     filtType = circuitType.currentText()
-    calc_resp(resistance1, resistance2, hpCapacitor, lpCapacitor, filtType)
+    freqStart = int(freqStart.text())
+    freqEnd = int(freqEnd.text())
+    Vin = float(Vin.text())
+    calc_resp(resistance1, resistance2, hpCapacitor, lpCapacitor, filtType, freqStart, freqEnd, Vin)
 
     return
 
 #This code will be used to simulate the response of an RC filter
-def calc_resp(Rlp, Rhp, Chp, Clp, filtType):    
+def calc_resp(Rlp, Rhp, Chp, Clp, filtType, freqStart, freqEnd, Vin):    
     #Function to calculate the frequency response
     
     #Create frequencies array 1 Hz to 1.5kHz - Change later to ask for frequency range in GUI
-    freq = range(1,500)
-    
-    #Change in GUI to ask for input voltage
-    Vin = 5
+    freq = range(freqStart,freqEnd)
 
     if filtType == "Low Pass RC":
         #Low Pass mode
@@ -82,7 +82,6 @@ def calc_resp(Rlp, Rhp, Chp, Clp, filtType):
         print("Add other circuits later")
         
     
-
     #Calculate logarithmic value
     VoutdB = [20*math.log10(v/Vin) for v in Vout]
 
@@ -150,11 +149,27 @@ def start_GUI():
 
     #Create Calculate button
     calcButton = QPushButton("Calculate")
-    calcButton.clicked.connect(lambda: run_button(lpResistanceBox, hpResistanceBox, hpCapacitorBox, lpCapacitorBox, filterDropDn))
+    calcButton.clicked.connect(lambda: run_button(lpResistanceBox, hpResistanceBox, hpCapacitorBox, lpCapacitorBox, filterDropDn, freqStart, freqEnd, vinBox))
+
+    #Add input voltage
+    vinBox = QLineEdit()
+    vinBox.setPlaceholderText("Enter the input voltage in V")
+
+    #Add frequency range
+    #horizontal box
+    freqRange = QHBoxLayout()
+    freqStart = QLineEdit()
+    freqStart.setPlaceholderText("Enter start frequency in Hz")
+    freqEnd = QLineEdit()
+    freqEnd.setPlaceholderText("Enter end frequency in Hz")
+    freqRange.addWidget(freqStart)
+    freqRange.addWidget(freqEnd)
 
     #Resise column
     col1.addWidget(filterDropDn)
     col1.addStretch()
+    col1.addWidget(vinBox)
+    col1.addLayout(freqRange)
     col1.addWidget(lpResistanceBox)
     col1.addWidget(hpResistanceBox)
     col1.addWidget(lpCapacitorBox)
@@ -190,7 +205,6 @@ def start_GUI():
     hpResistanceBox.hide()
     hpCapacitorBox.hide()
     lpCapacitorBox.hide()
-
     sys.exit(app.exec())
 
 
