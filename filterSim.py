@@ -18,35 +18,41 @@ from PyQt6.QtWidgets import(
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 
-#Function when the run button is pressed
-def run_button(resistance, hpCapacitor, lpCapacitor):
-    #Take values from the text boxes
-    R = float(resistance.text())
-    Chp = float(hpCapacitor.text())
-    Clp = float(lpCapacitor.text())
+#Function to change the layout when the dropdown is selected
+def change_circuit(filterType, rlp, rhp, clp, chp):
+    if filterType == "Low Pass RC":
+        print("Show low-pass layout")
+        chp.hide()
+        clp.show()
+        rhp.hide()
+        rlp.show()
+    elif filterType == "High Pass RC":
+        print("Show high-pass layout")
+        chp.show()
+        clp.hide()
+        rhp.show()
+        rlp.hide()
+    elif filterType == "----":
+        print("No Circuit Chosen")
+        chp.hide()
+        clp.hide()
+        rhp.hide()
+        rlp.hide()
+    else:
+        print("Later")
+    pass
 
-    calc_resp(R, Chp, Clp)
+
+#Function when the run button is pressed
+def run_button(resistance1, resistance2, hpCapacitor, lpCapacitor, circuitType):
+    #Take values from the text boxes
+    filtType = circuitType.currentText()
+    calc_resp(resistance1, resistance2, hpCapacitor, lpCapacitor, filtType)
 
     return
 
-
-
-
-
 #This code will be used to simulate the response of an RC filter
-
-def calc_resp(R, Chp, Clp):
-    Clp = Clp*1e-6
-    Chp = Chp*1e-6
-    #Determine the type of filter through the values 
-    if Chp == 0:
-        filtType = "LP"
-    elif Clp == 0:
-        filtType = "HP"
-    else:
-        filtType = "BP"
-
-    
+def calc_resp(Rlp, Rhp, Chp, Clp, filtType):    
     #Function to calculate the frequency response
     
     #Create frequencies array 1 Hz to 1.5kHz - Change later to ask for frequency range in GUI
@@ -55,29 +61,25 @@ def calc_resp(R, Chp, Clp):
     #Change in GUI to ask for input voltage
     Vin = 5
 
-    if filtType == "LP":
+    if filtType == "Low Pass RC":
         #Low Pass mode
+        Rlp = float(Rlp.text())
+        Clp = float(Clp.text())*1e-6
         #Vout = Vin*X_c/sqrt(R^2+X_c^2)
         #Equation for impedance is X_c = 1/(2*pi*f*C)
         x_c = [1/(2*math.pi*float(f)*Clp) for f in freq]    
-        Vout = [(Vin*x)/(math.sqrt(R*R+x*x)) for x in x_c]
+        Vout = [(Vin*x)/(math.sqrt(Rlp*Rlp+x*x)) for x in x_c]
         
-    elif filtType == "HP":
+    elif filtType == "High Pass RC":
         #High Pass mode
+        Rhp = float(Rhp.text())
+        Chp = float(Chp.text())*1e-6
         #Equation for impedance is X_c = 1/(2*pi*f*C)
         x_c = [1/(2*math.pi*float(f)*Chp) for f in freq]    
         #Vout = Win*R/sqrt(R^2+X_c^2)
-        Vout = [(Vin*R)/(math.sqrt(R*R+x*x)) for x in x_c]
-
-    elif filtType == "BP":
-        #Bandpass mode
-        Cl = input("Please input low pass Capacitor Value in uF: ")
-        Ch = input("Please input high pass Capacitor Value in uF: ")
-        
-        #Vout = Vin*X_hp/sqrt(X_lp^2+X_hp^2+R^2)
-
+        Vout = [(Vin*Rhp)/(math.sqrt(Rhp*Rhp+x*x)) for x in x_c]
     else:
-        print("Bruh")
+        print("Add other circuits later")
         
     
 
@@ -88,7 +90,7 @@ def calc_resp(R, Chp, Clp):
     #Figure 1, actual voltage
     plt.figure(1)
     plt.plot(freq, Vout)
-    plt.title(filtType + " Filter frequency Response" + "R=" + str(R) + " C=" + str(Clp))
+    plt.title(filtType + " Filter frequency Response" + "R=" + str(Rlp) + " C=" + str(Clp))
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("voltage (V)")
 
@@ -96,7 +98,7 @@ def calc_resp(R, Chp, Clp):
     #Figure 2 gain in dB
     plt.figure(2)
     plt.plot(freq, VoutdB)
-    plt.title(filtType + " Filter frequency Response" + "R=" + str(R) + " C=" + str(Clp))
+    plt.title(filtType + " Filter frequency Response" + "R=" + str(Rlp) + " C=" + str(Clp))
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("gain (dB)")
     plt.show()
@@ -104,80 +106,97 @@ def calc_resp(R, Chp, Clp):
     
     return True
 
+#Define GUI function
+def start_GUI():
+    app = QApplication(sys.argv)
 
+    window = QWidget()
+    window.setWindowTitle("Analog Filter Sim")
+    window.resize(800, 500)
+    window.show()
+
+    #Layout
+    layout = QHBoxLayout()
+    col2 = QVBoxLayout()
+    col1 = QVBoxLayout()
+
+    #########################
+    #Left Column
+    ########################
+
+
+    #Adding component values
+    lpResistanceBox = QLineEdit()
+    lpResistanceBox.setPlaceholderText("Enter Resistance in Ohms For LP")
+    hpResistanceBox = QLineEdit()
+    hpResistanceBox.setPlaceholderText("Enter Resistance in Ohms For HP")
+
+    lpCapacitorBox = QLineEdit()
+    lpCapacitorBox.setPlaceholderText("Enter low Pass Capacitance in uF")
+
+    hpCapacitorBox = QLineEdit()
+    hpCapacitorBox.setPlaceholderText("Enter High Pass Capacitance in uF")
+
+    #Create dropdown
+    filterDropDn = QComboBox()
+    filterDropDn.addItem("----")
+    filterDropDn.addItem("Low Pass RC")
+    filterDropDn.addItem("High Pass RC")
+    filterDropDn.addItem("RC Unbuffered Bandpass")
+    filterDropDn.addItem("RC Buffered Bandpass")
+    filterDropDn.addItem("RLC Series Bandpass")
+    filterDropDn.addItem("RLC Parallel Bandpass")
+    filterDropDn.currentTextChanged.connect(lambda filter_type: change_circuit(filter_type, lpResistanceBox, hpResistanceBox, lpCapacitorBox, hpCapacitorBox))
+
+    #Create Calculate button
+    calcButton = QPushButton("Calculate")
+    calcButton.clicked.connect(lambda: run_button(lpResistanceBox, hpResistanceBox, hpCapacitorBox, lpCapacitorBox, filterDropDn))
+
+    #Resise column
+    col1.addWidget(filterDropDn)
+    col1.addStretch()
+    col1.addWidget(lpResistanceBox)
+    col1.addWidget(hpResistanceBox)
+    col1.addWidget(lpCapacitorBox)
+    col1.addWidget(hpCapacitorBox)
+    col1.addWidget(calcButton)
+
+
+    #########################
+    #Right Column
+    ########################
+
+    #Picture on right
+    image = QPixmap("fil85.webp")
+
+    if image.isNull():
+        print("Error: Image could not be loaded")
+
+    image_label = QLabel()
+
+    image_label.setPixmap(image)
+    image_label.setMinimumSize(400,500)
+
+    col2.addWidget(image_label)
+
+
+
+    layout.addLayout(col1,30)
+    layout.addLayout(col2,70)
+    window.setLayout(layout)
+
+    #Hide initial widgets, Keep only drop down and calculate button
+    lpResistanceBox.hide()
+    hpResistanceBox.hide()
+    hpCapacitorBox.hide()
+    lpCapacitorBox.hide()
+
+    sys.exit(app.exec())
 
 
 #Start of main code
-app = QApplication(sys.argv)
-
-window = QWidget()
-window.setWindowTitle("Analog Filter Sim")
-window.resize(800, 500)
-window.show()
-
-#Layout
-layout = QHBoxLayout()
-col2 = QVBoxLayout()
-col1 = QVBoxLayout()
-
-#########################
-#Left Column
-########################
-
-#Create dropdown
-filterDropDn = QComboBox()
-filterDropDn.addItem("Frequency Cutoff Calculate")
-filterDropDn.addItem("Component Calculate")
-
-#Adding component values
-resistanceBox = QLineEdit()
-resistanceBox.setPlaceholderText("Enter Resistance in Ohms")
-
-hpCapacitorBox = QLineEdit()
-hpCapacitorBox.setPlaceholderText("Enter High Pass Capacitance in uF")
-
-lpCapacitorBox = QLineEdit()
-lpCapacitorBox.setPlaceholderText("Enter low Pass Capacitance in uF")
-
-#Create Calculate button
-calcButton = QPushButton("Calculate")
-calcButton.clicked.connect(lambda: run_button(resistanceBox, hpCapacitorBox, lpCapacitorBox))
+start_GUI()
 
 
-#Resise column
-col1.addWidget(filterDropDn)
-col1.addStretch()
-col1.addWidget(resistanceBox)
-col1.addWidget(hpCapacitorBox)
-col1.addWidget(lpCapacitorBox)
-col1.addWidget(calcButton)
-
-
-#########################
-#Right Column
-########################
-
-#Picture on right
-image = QPixmap("fil85.webp")
-
-if image.isNull():
-    print("Error: Image could not be loaded")
-
-image_label = QLabel()
-
-image_label.setPixmap(image)
-image_label.setMinimumSize(400,500)
-
-col2.addWidget(image_label)
-
-
-
-layout.addLayout(col1,30)
-layout.addLayout(col2,70)
-window.setLayout(layout)
-
-
-
-sys.exit(app.exec())
 #calc_resp()
 
