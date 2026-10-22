@@ -38,6 +38,15 @@ def change_circuit(filterType, rlp, rhp, clp, chp, RCLP, RCHP, RCBP):
         clp.hide()
         rhp.show()
         rlp.hide()
+    elif filterType == "RC Unbuffered Bandpass":
+        print("Show RC band-pass layout")
+        RCLP.hide()
+        RCHP.hide()
+        RCBP.show()
+        chp.show()
+        clp.show()
+        rhp.show()
+        rlp.show()
     elif filterType == "----":
         print("No Circuit Chosen")
         RCLP.hide()
