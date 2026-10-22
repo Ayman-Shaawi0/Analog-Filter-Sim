@@ -30,6 +30,7 @@ def plot_freqResp(freq, Vout, VoutdB, filterType, Rlp, Rhp, Clp, Chp, cutoffLp, 
         componentVal = (
             "Rlp = " + str(Rlp) + "Ω\n"
             "Clp = " + str(Clp) + "F\n"
+            "fc = " + str(cutoffLp) + "Hz\n"
         )
         plt.legend(plt.gca().lines, [componentVal], loc="upper right")
         #Plot the gain in dB
@@ -40,6 +41,7 @@ def plot_freqResp(freq, Vout, VoutdB, filterType, Rlp, Rhp, Clp, Chp, cutoffLp, 
         componentVal = (
             "Rlp = " + str(Rlp) + "Ω\n"
             "Clp = " + str(Clp) + "F\n"
+            "fc = " + str(cutoffLp) + "Hz\n"
         )
         plt.legend(plt.gca().lines, [componentVal], loc="upper right")
     elif filterType == "High Pass RC":
@@ -51,6 +53,7 @@ def plot_freqResp(freq, Vout, VoutdB, filterType, Rlp, Rhp, Clp, Chp, cutoffLp, 
         componentVal = (
             "Rlp = " + str(Rhp) + "Ω\n"
             "Clp = " + str(Chp) + "F\n"
+            "fc = " + str(cutoffHp) + "Hz\n"
         )
         plt.legend(plt.gca().lines, [componentVal], loc="upper left")
         #Plot the gain in dB
@@ -61,6 +64,7 @@ def plot_freqResp(freq, Vout, VoutdB, filterType, Rlp, Rhp, Clp, Chp, cutoffLp, 
         componentVal = (
             "Rlp = " + str(Rhp) + "Ω\n"
             "Clp = " + str(Chp) + "F\n"
+            "fc = " + str(cutoffHp) + "Hz\n"
         )
         plt.legend(plt.gca().lines, [componentVal], loc="upper left")
     elif filterType == "RC Unbuffered Bandpass":
